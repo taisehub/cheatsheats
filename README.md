@@ -1,2 +1,2 @@
-# cheatsheats
-my cheatsheat
+# cheatsheets
+my cheatsheet
