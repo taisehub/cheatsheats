@@ -12,9 +12,8 @@ https://login.microsoftonline.com/getuserrealm.srf?login=[USERNAME@DOMAIN]&xml=1
 - Get the Tenant ID  
 https://login.microsoftonline.com/[DOMAIN]/.well-known/openid-configuration
 
-- • Validate Email ID by sending requests to 
+- • Validate Email ID by sending requests to  
 https://login.microsoftonline.com/common/GetCredentialType
-
 
 ### AADInternals
 ```powershell
@@ -39,16 +38,20 @@ Install-Module Microsoft.Graph
 # Connect to MgGraph
 Connect-MgGraph
 
+# Connect to MgGraph with Token
 $Token = eyJ0...
 Connect-MgGraph -AccessToken ($Token | ConvertTo-SecureString -AsPlainText -Force)
-
 
 # Get the current session state
 Get-MgContext
 
 # Get details of the curernt tenant
 Get-MgOrganization | fl *
+```
 
+### MSGraph PowerShell module - Users
+
+```powershell
 Get-MgUser -All
 Get-MgUser -UserId taise@Inugasky.net
 Get-MgUser -Filter "startswith(DisplayName, 'a')" -ConsistencyLevel enentual
@@ -71,3 +74,87 @@ Get-MgUserCreatedObject -UserId taise@Inugasky.net | fl *
 Get-MgUserOwnedObject -UserId taise@inugasky.net | fl *
 ```
 
+### MSGraph PowerShell module - Groups
+
+```powershell
+# List all Groups
+Get-MgGroup -All
+
+# Enumerate a specific group
+Get-MgGroup -GroupId 00000000-0000-0000-0000-000000000000
+
+# To search for groups which contain the word "admin" in their name
+Get-MgGroup -ConsistencyLevel eventual -Search '"DisplayName:Admin"'
+
+# Get Groups that allow Dynamic membership
+Get-MgGroup | ?{$_.GroupTypes -eq 'DynamicMembership'}
+
+# Enumerate a specific group
+Get-MgGroupMember -GroupId 00000000-0000-0000-0000-000000000000
+
+# Get groups and roles where the specified user is a member
+(Get-MgUserMemberOf -UserId taise@inugasky.net).AdditionalProperties
+
+# Get all available role template
+Get-MgDirectoryROleTemplate
+
+# Get all available role templates
+Get-MgDirectoryRoleTemplate
+
+# Get all enabled roles
+Get-MgDirectoryRole
+
+# Enumerate users to whom roles are assigned
+$RoleId = (Get-MgDirectoryRole -Filter "DisplayName -eq 'Global Administrator'").Id
+(Get-MgDirectoryRoleMember -DirectoryRoleId $RoleId).AdditionalProperties
+```
+
+### MSGraph PowerShell module - Devices
+
+```powershell
+# Get all Azure joined and registered devices
+Get-MgDevice -All | fl *
+
+# List all the active devices
+Get-MgDevice -All | ?{$_.ApproximateLastSignInDateTime -ne $null}
+
+
+# List Registered owners of all the devices
+$Ids = (Get-MgDevice –All).Id; foreach($i in $Ids){ (Get-MgDeviceRegisteredOwner -DeviceId $i).AdditionalProperties}
+$Ids = (Get-MgDevice –All).Id; foreach($i in $Ids){ (Get-MgDeviceRegisteredOwner -DeviceId $i).AdditionalProperties.userPrincipalName}
+
+# List devices owned by a user
+(Get-MgUserOwnedDevice -userId taise@inugasky.net).AdditionalProperties
+
+# List devices registered by auser
+(Get-MgUserRegisteredDevice -userId taise@inugasky.net).AdditionalProperties
+
+# List devices managed using Intune (list compliant devices)
+Get-MgDevice -All | ?{$_.IsComliant -eq "True"} | fl *
+```
+
+### MSGraph PowerShell module - Apps
+
+```powershell
+# Get all the application objects registered with the current tenant
+Get-MgApplication -All
+
+# Get all details about an application
+Get-MgApplicationByAppId -AppId 00000000-0000-0000-0000-000000000000 | fl *
+
+# Get an application based on the display name
+Get-MgApplication -All | ?{$_.DisplayName -match "app"}
+
+# List all the apps with an application password
+Get-MgApplication -All| ?{$_.PasswordCredentials -ne $null}
+
+# Get owner of an application
+(Get-MgApplicationOwner -ApplicationId 00000000-714e-0000-000000000000).AdditionalProperties.userPrincipalName
+
+# Get Apps where a User has a role
+Get-MgUserAppRoleAssignment -UserId taise@inugasky.net | fl *
+
+# Get Apps where a Group has a role 
+
+Get-MgGroupAppRoleAssignment -GroupId 00000000-0000-0000-0000-000000000000 | fl *
+```
