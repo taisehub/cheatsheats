@@ -162,3 +162,54 @@ Get-MgUserAppRoleAssignment -UserId taise@inugasky.net | fl *
 
 Get-MgGroupAppRoleAssignment -GroupId 00000000-0000-0000-0000-000000000000 | fl *
 ```
+
+---
+
+## Az PowerShell
+
+```powershell
+Install-Module Az
+Connect-AzAccount
+
+Connect-AzAccount -AccountId taise@inugasky.net -AccessToken eyJ0...
+
+# Available ResouceType: AadGraph, AnalysisServices, Arm, Attestation, Batch, DataLake, KeyVault, MSGraph, OperationalInsights, ResourceManager, Storage, Synapse
+Get-AzAccessToken -ResourceTypeNName MSGraph
+
+Get-Command *azad*
+Get-Command *az*
+Get-Command *azvm*
+
+# Get the information about the current context
+Get-AzContext
+
+# Enumerate subscriptions accessible by the current user
+Get-AzSubscription
+
+# Enumerate all resources visible to the current user
+Get-AzResource
+
+# Enumarate all Azure RBAC role assignments
+Get-AzRoleAssignment
+
+# All Azure roles assigned to the user
+Get-AzRoleAssignment -SignInName taise@inugasky.net
+
+# Enumerate VM
+Get-AzVM -Name test* | fl *
+
+# Enumerate Web App Services
+Get-AzWebApp
+
+# Enumerate Function Apps
+Get-AzFunctionApp
+
+# Enumerate StrageAccounts
+Get-AzStorageAccount
+
+# Check access restrictions by IP address
+(Get-AzStorageAccount | select -ExpandProperty NetworkRuleSet).IpRules
+
+# Enumerate KeyVault
+Get-AzKeyVault
+```
