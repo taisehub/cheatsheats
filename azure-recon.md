@@ -30,6 +30,10 @@ Get-AADIntTenantDomains -Domain inugasky.net
 Invoke-AADIntReconAsOutsider -DomainName inugasky.nets
 ```
 
+---
+
+## MSGraph PowerShell
+
 ### MSGraph PowerShell module
 
 ```powershell
